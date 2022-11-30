@@ -5,13 +5,7 @@ code 參考用，不要 clone 下來。
 先 make 好，cd 到 main 在的資料夾，執行
 
 ```
-python ~/../b10902086/hw3_judge/judge.py 1 2 3
-```
-
-在工作站上可以
-
-```
-python ~/../b10902086/hw3_judge/judge.py 1 2 3
+python ~b10902086/hw3_judge/judge.py 1 2 3
 ```
 
 ## Subtask 1
@@ -35,7 +29,7 @@ python ~/../b10902086/hw3_judge/judge.py 1 2 3
 如果只要測 subtask 1,2 可以:
 
 ```
-python <path_to_judge.py> 1 2
+python ~b10902086/hw3_judge/judge.py 1 2
 ```
 
 ## Output

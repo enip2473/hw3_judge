@@ -1,9 +1,11 @@
 from subprocess import *
 import getopt, sys, os, signal, time
 subtask = [[] for i in range(5)]
-subtask[1] = [[3, 4, 5, -1], [2, 10, 18, -1], [4, 1, 13, -1], [1, 7, 24, -1], [2, 3, 13, -1]]
-subtask[2] = [[3, 4, 5, -1], [2, 10, 18, -1], [4, 1, 13, -1], [1, 7, 24, -1], [2, 3, 13, -1]]
-subtask[3] = [[3, 4, 5, 5], [2, 10, 18, 9], [4, 1, 13, 3], [1, 7, 24, 1], [2, 3, 13, 8]]
+subtask[1] = [[3, 4, 5, -1], [2, 10, 18, -1], [4, 1, 13, -1], [1, 7, 24, -1], [100, 3, 13, -1]]
+subtask[2] = [[3, 1, 17, -1], [2, 14, 64, -1], [4, 19, 24, -1], [1, 12, 13, -1], [100, 9, 33, -1]]
+subtask[3] = [[3, 9, 7, 12], [2, 10, 18, 9], [4, -1, 2, 15], [1, 17, -1, 11], [100, 7, 14, 8]]
+
+options = ["main.c", "scheduler.c", "threads.c", "threadtools.h"]
 
 def rnd(x, up) :
     x = (x + 2.473) * 5.678
@@ -49,10 +51,11 @@ def single_task(subtask_num, idx, task) :
     if subtask_num >= 2:
         x = subtask_num * 6 + idx
         while process.poll() is None:
+            x = rnd(x, 1)
+            if x > 0.5:
+                time.sleep(x)
+                process.send_signal(signal.SIGTSTP)
             x = rnd(x, 2)
-            time.sleep(x)
-            process.send_signal(signal.SIGTSTP)
-            x = rnd(x, 3)
             time.sleep(x)
             if fifo_num > 0:
                 fifo_num -= 1
@@ -77,12 +80,22 @@ def run_subtask(x):
     for idx, task in enumerate(subtask[x]):
         single_task(x, idx + 1, task)
 
+def compile_replace_file(x):
+    gen = Popen("python " + os.system(os.path.abspath(os.path.dirname(__file__)) + "/compile.py {}".format(x)))
+
 try:
-    optlist, args = getopt.getopt(sys.argv[1:], '')
+    optlist, args = getopt.getopt(sys.argv[1:], '-t')
     args = [int(i) for i in args]
 except:
-    print("python judge.py [subtask]")
+    print("see README.md in the same directory for usage")
     exit(0)
+
+for i, j in optlist:
+    if i == '-t':
+        if j not in options:
+            print("Please specify which file to replace.")
+            exit(0)
+        compile_replace_file(j)
 
 os.system("rm -rf test_result")
 os.system("mkdir test_result")
@@ -92,5 +105,5 @@ for i in range(1, 4):
         run_subtask(i)
 
 if len(args) == 0:
-    print("Usage : python judge.py 1/2/3")
+    print("see README.md in the same directory for usage")
 
